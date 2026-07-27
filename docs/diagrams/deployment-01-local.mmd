@@ -1,0 +1,154 @@
+flowchart LR
+
+%% =====================================================
+%% DEVELOPMENT MACHINE
+%% =====================================================
+
+subgraph DEV["Developer Workstation"]
+
+VS["VS Code / IDE"]
+BROWSER["Browser"]
+CLI["Terminal"]
+
+end
+
+%% =====================================================
+%% DOCKER COMPOSE
+%% =====================================================
+
+subgraph COMPOSE["Docker Compose"]
+
+%% ------------------------
+%% Infrastructure
+%% ------------------------
+
+subgraph INFRA["Infrastructure"]
+
+NATS["NATS JetStream"]
+
+POSTGRES["PostgreSQL"]
+
+VALKEY["Valkey"]
+
+OPENSEARCH["OpenSearch"]
+
+MINIO["MinIO"]
+
+end
+
+%% ------------------------
+%% Observability
+%% ------------------------
+
+subgraph OBS["Observability"]
+
+OTEL["OpenTelemetry Collector"]
+
+PROM["Prometheus"]
+
+LOKI["Loki"]
+
+TEMPO["Tempo"]
+
+GRAFANA["Grafana"]
+
+end
+
+%% ------------------------
+%% OIP Platform
+%% ------------------------
+
+subgraph PLATFORM["OIP Platform"]
+
+API["API Gateway"]
+
+AUTH["Identity Service"]
+
+CORRELATION["Correlation Engine"]
+
+KNOWLEDGE["Knowledge Engine"]
+
+CONTEXT["Context Engine"]
+
+DECISION["Decision Intelligence"]
+
+end
+
+%% ------------------------
+%% Runtime
+%% ------------------------
+
+subgraph RUNTIME["Capability Runtime"]
+
+RUNTIME["oip-runtime"]
+
+COLOR["oip-capability-color"]
+
+end
+
+end
+
+%% =====================================================
+%% CONNECTIONS
+%% =====================================================
+
+VS --> CLI
+BROWSER --> API
+
+CLI --> COMPOSE
+
+API --> AUTH
+API --> NATS
+
+NATS --> RUNTIME
+
+RUNTIME --> COLOR
+COLOR --> NATS
+
+NATS --> CORRELATION
+
+CORRELATION --> KNOWLEDGE
+
+KNOWLEDGE --> CONTEXT
+
+CONTEXT --> DECISION
+
+KNOWLEDGE --> POSTGRES
+KNOWLEDGE --> OPENSEARCH
+KNOWLEDGE --> VALKEY
+KNOWLEDGE --> MINIO
+
+API --> OTEL
+CORRELATION --> OTEL
+KNOWLEDGE --> OTEL
+CONTEXT --> OTEL
+DECISION --> OTEL
+RUNTIME --> OTEL
+
+OTEL --> PROM
+OTEL --> LOKI
+OTEL --> TEMPO
+
+PROM --> GRAFANA
+LOKI --> GRAFANA
+TEMPO --> GRAFANA
+
+%% =====================================================
+%% STYLES
+%% =====================================================
+
+classDef infra fill:#1f2937,color:#fff,stroke:#60a5fa,stroke-width:2px;
+classDef platform fill:#14532d,color:#fff,stroke:#4ade80,stroke-width:2px;
+classDef runtime fill:#4c1d95,color:#fff,stroke:#c084fc,stroke-width:2px;
+classDef observability fill:#78350f,color:#fff,stroke:#facc15,stroke-width:2px;
+classDef dev fill:#374151,color:#fff,stroke:#d1d5db,stroke-width:2px;
+
+class VS,BROWSER,CLI dev;
+
+class NATS,POSTGRES,VALKEY,OPENSEARCH,MINIO infra;
+
+class API,AUTH,CORRELATION,KNOWLEDGE,CONTEXT,DECISION platform;
+
+class RUNTIME,COLOR runtime;
+
+class OTEL,PROM,LOKI,TEMPO,GRAFANA observability;

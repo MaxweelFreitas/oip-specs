@@ -1,0 +1,227 @@
+flowchart TB
+
+%% =====================================================
+%% CLIENTS
+%% =====================================================
+
+subgraph CLIENTS["Clients"]
+
+WEB["Web Dashboard"]
+MOBILE["Mobile App"]
+COMMAND["Command Center"]
+
+end
+
+%% =====================================================
+%% EDGE
+%% =====================================================
+
+subgraph EDGE["Edge Environment"]
+
+CAM1["IP Cameras"]
+CAM2["Drones"]
+CAM3["Bodycams"]
+CAM4["Microphones"]
+CAM5["IoT Sensors"]
+
+EDGEGW["Edge Gateway"]
+
+CAM1 --> EDGEGW
+CAM2 --> EDGEGW
+CAM3 --> EDGEGW
+CAM4 --> EDGEGW
+CAM5 --> EDGEGW
+
+end
+
+%% =====================================================
+%% PLATFORM CLUSTER
+%% =====================================================
+
+subgraph CLUSTER["OIP Kubernetes Cluster"]
+
+%% ------------------------
+%% Gateway Layer
+%% ------------------------
+
+subgraph GATEWAY["Gateway Layer"]
+
+LB["Load Balancer"]
+API["API Gateway"]
+AUTH["Identity Service"]
+
+LB --> API
+API --> AUTH
+
+end
+
+%% ------------------------
+%% Event Layer
+%% ------------------------
+
+subgraph EVENTS["Messaging"]
+
+NATS["NATS JetStream"]
+
+end
+
+%% ------------------------
+%% Runtime Layer
+%% ------------------------
+
+subgraph RUNTIME["Capability Runtime"]
+
+RUNTIME1["Runtime Node A"]
+RUNTIME2["Runtime Node B"]
+RUNTIME3["Runtime Node C"]
+
+end
+
+%% ------------------------
+%% Capabilities
+%% ------------------------
+
+subgraph CAPS["Capabilities"]
+
+COLOR["Color Intelligence"]
+
+VEHICLE["Vehicle Intelligence"]
+
+PERSON["Person Intelligence"]
+
+OCR["OCR"]
+
+AUDIO["Audio Intelligence"]
+
+FIRE["Fire Detection"]
+
+CUSTOM["Third-party Capability"]
+
+end
+
+%% ------------------------
+%% Knowledge Layer
+%% ------------------------
+
+subgraph KNOWLEDGE["Knowledge Layer"]
+
+CORRELATION["Correlation Engine"]
+
+KG["Knowledge Engine"]
+
+CONTEXT["Context Engine"]
+
+MEMORY["Operational Memory"]
+
+DECISION["Decision Intelligence"]
+
+end
+
+%% ------------------------
+%% Storage
+%% ------------------------
+
+subgraph STORAGE["Data Layer"]
+
+POSTGRES["PostgreSQL"]
+
+OPENSEARCH["OpenSearch"]
+
+VALKEY["Valkey"]
+
+FEAST["Feature Store"]
+
+VECTOR["Qdrant / pgvector"]
+
+OBJECT["Object Storage"]
+
+end
+
+%% ------------------------
+%% Observability
+%% ------------------------
+
+subgraph OBS["Observability"]
+
+OTEL["OpenTelemetry"]
+
+PROM["Prometheus"]
+
+GRAFANA["Grafana"]
+
+LOKI["Loki"]
+
+TEMPO["Tempo"]
+
+end
+
+end
+
+%% =====================================================
+%% FLOWS
+%% =====================================================
+
+CLIENTS --> LB
+
+EDGEGW --> API
+
+API --> NATS
+
+NATS --> RUNTIME1
+NATS --> RUNTIME2
+NATS --> RUNTIME3
+
+RUNTIME1 --> COLOR
+RUNTIME1 --> OCR
+
+RUNTIME2 --> VEHICLE
+RUNTIME2 --> PERSON
+
+RUNTIME3 --> AUDIO
+RUNTIME3 --> FIRE
+RUNTIME3 --> CUSTOM
+
+COLOR --> NATS
+OCR --> NATS
+VEHICLE --> NATS
+PERSON --> NATS
+AUDIO --> NATS
+FIRE --> NATS
+CUSTOM --> NATS
+
+NATS --> CORRELATION
+
+CORRELATION --> KG
+
+KG --> CONTEXT
+
+CONTEXT --> MEMORY
+
+MEMORY --> DECISION
+
+DECISION --> API
+
+KG --> OPENSEARCH
+KG --> POSTGRES
+KG --> VALKEY
+KG --> FEAST
+KG --> VECTOR
+KG --> OBJECT
+
+RUNTIME1 --> OTEL
+RUNTIME2 --> OTEL
+RUNTIME3 --> OTEL
+
+API --> OTEL
+CORRELATION --> OTEL
+KG --> OTEL
+CONTEXT --> OTEL
+DECISION --> OTEL
+
+OTEL --> PROM
+OTEL --> LOKI
+OTEL --> TEMPO
+
+PROM --> GRAFANA
+LOKI --> GRAFANA
+TEMPO --> GRAFANA

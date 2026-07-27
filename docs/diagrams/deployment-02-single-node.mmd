@@ -1,0 +1,221 @@
+flowchart TB
+
+%% =====================================================
+%% CLIENTS
+%% =====================================================
+
+subgraph CLIENTS["Clientes"]
+
+WEB["Dashboard Web"]
+MOBILE["Aplicativo Mobile"]
+OPERATOR["Operador"]
+
+end
+
+%% =====================================================
+%% NETWORK
+%% =====================================================
+
+INTERNET["Internet / Rede Corporativa"]
+
+LB["Nginx / Traefik"]
+
+CLIENTS --> INTERNET
+INTERNET --> LB
+
+%% =====================================================
+%% SINGLE SERVER
+%% =====================================================
+
+subgraph SERVER["Servidor OIP (Docker Compose / Podman)"]
+
+%% -------------------------------------------------
+%% API
+%% -------------------------------------------------
+
+subgraph API["Gateway"]
+
+GATEWAY["API Gateway"]
+IDENTITY["Identity Service"]
+
+end
+
+%% -------------------------------------------------
+%% MESSAGING
+%% -------------------------------------------------
+
+subgraph MSG["Mensageria"]
+
+NATS["NATS JetStream"]
+
+end
+
+%% -------------------------------------------------
+%% RUNTIME
+%% -------------------------------------------------
+
+subgraph RT["Capability Runtime"]
+
+RUNTIME["oip-runtime"]
+
+COLOR["Capability Color"]
+
+VEHICLE["Capability Vehicle"]
+
+OCR["Capability OCR"]
+
+AUDIO["Capability Audio"]
+
+end
+
+%% -------------------------------------------------
+%% KNOWLEDGE
+%% -------------------------------------------------
+
+subgraph KNOW["Knowledge Layer"]
+
+CORRELATION["Correlation Engine"]
+
+KNOWLEDGE["Knowledge Engine"]
+
+CONTEXT["Context Engine"]
+
+MEMORY["Operational Memory"]
+
+DECISION["Decision Intelligence"]
+
+end
+
+%% -------------------------------------------------
+%% STORAGE
+%% -------------------------------------------------
+
+subgraph STORAGE["Persistência"]
+
+POSTGRES["PostgreSQL"]
+
+VALKEY["Valkey"]
+
+OPENSEARCH["OpenSearch"]
+
+MINIO["MinIO"]
+
+VECTOR["pgvector"]
+
+end
+
+%% -------------------------------------------------
+%% OBSERVABILITY
+%% -------------------------------------------------
+
+subgraph OBS["Observabilidade"]
+
+OTEL["OpenTelemetry"]
+
+PROM["Prometheus"]
+
+LOKI["Loki"]
+
+TEMPO["Tempo"]
+
+GRAFANA["Grafana"]
+
+end
+
+end
+
+%% =====================================================
+%% EDGE
+%% =====================================================
+
+subgraph EDGE["Dispositivos"]
+
+CAMERAS["Câmeras IP"]
+
+DRONES["Drones"]
+
+BODYCAM["Bodycams"]
+
+MIC["Microfones"]
+
+SENSORS["Sensores IoT"]
+
+end
+
+%% =====================================================
+%% FLOWS
+%% =====================================================
+
+LB --> GATEWAY
+
+EDGE --> GATEWAY
+
+GATEWAY --> IDENTITY
+
+GATEWAY --> NATS
+
+NATS --> RUNTIME
+
+RUNTIME --> COLOR
+RUNTIME --> VEHICLE
+RUNTIME --> OCR
+RUNTIME --> AUDIO
+
+COLOR --> NATS
+VEHICLE --> NATS
+OCR --> NATS
+AUDIO --> NATS
+
+NATS --> CORRELATION
+
+CORRELATION --> KNOWLEDGE
+
+KNOWLEDGE --> CONTEXT
+
+CONTEXT --> MEMORY
+
+MEMORY --> DECISION
+
+KNOWLEDGE --> POSTGRES
+KNOWLEDGE --> OPENSEARCH
+KNOWLEDGE --> VALKEY
+KNOWLEDGE --> VECTOR
+KNOWLEDGE --> MINIO
+
+GATEWAY --> OTEL
+RUNTIME --> OTEL
+CORRELATION --> OTEL
+KNOWLEDGE --> OTEL
+CONTEXT --> OTEL
+DECISION --> OTEL
+
+OTEL --> PROM
+OTEL --> LOKI
+OTEL --> TEMPO
+
+PROM --> GRAFANA
+LOKI --> GRAFANA
+TEMPO --> GRAFANA
+
+%% =====================================================
+%% STYLES
+%% =====================================================
+
+classDef gateway fill:#1E3A5F,color:#fff,stroke:#5DADE2,stroke-width:2px;
+classDef runtime fill:#512E5F,color:#fff,stroke:#C39BD3,stroke-width:2px;
+classDef knowledge fill:#145A32,color:#fff,stroke:#58D68D,stroke-width:2px;
+classDef storage fill:#6E2C00,color:#fff,stroke:#F5B041,stroke-width:2px;
+classDef observability fill:#7D6608,color:#fff,stroke:#F7DC6F,stroke-width:2px;
+classDef devices fill:#424949,color:#fff,stroke:#BFC9CA,stroke-width:2px;
+
+class GATEWAY,IDENTITY,NATS gateway;
+
+class RUNTIME,COLOR,VEHICLE,OCR,AUDIO runtime;
+
+class CORRELATION,KNOWLEDGE,CONTEXT,MEMORY,DECISION knowledge;
+
+class POSTGRES,VALKEY,OPENSEARCH,MINIO,VECTOR storage;
+
+class OTEL,PROM,LOKI,TEMPO,GRAFANA observability;
+
+class CAMERAS,DRONES,BODYCAM,MIC,SENSORS devices;

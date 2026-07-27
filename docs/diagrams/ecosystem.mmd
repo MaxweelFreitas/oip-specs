@@ -1,0 +1,205 @@
+flowchart TB
+
+%% =====================================================
+%% OIP ECOSYSTEM
+%% =====================================================
+
+classDef specs fill:#1E3A5F,color:#fff,stroke:#5DADE2,stroke-width:2px;
+classDef runtime fill:#0B5345,color:#fff,stroke:#58D68D,stroke-width:2px;
+classDef capability fill:#512E5F,color:#fff,stroke:#BB8FCE,stroke-width:2px;
+classDef platform fill:#7D6608,color:#fff,stroke:#F7DC6F,stroke-width:2px;
+classDef external fill:#424949,color:#fff,stroke:#BFC9CA,stroke-width:2px;
+
+%% =====================================================
+%% SPECIFICATIONS
+%% =====================================================
+
+subgraph S["OIP Specifications"]
+direction TB
+
+SPEC["oip-specs"]
+
+CSpec["CSpec"]
+OES["OES"]
+OMS["OMS"]
+OCL["OCL"]
+OCS["OCS"]
+CSS["CSS"]
+OKS["OKS"]
+
+SPEC --> CSpec
+SPEC --> OES
+SPEC --> OMS
+SPEC --> OCL
+SPEC --> OCS
+SPEC --> CSS
+SPEC --> OKS
+
+end
+
+%% =====================================================
+%% PROTO
+%% =====================================================
+
+PROTO["oip-proto"]
+
+%% =====================================================
+%% SDK
+%% =====================================================
+
+subgraph SDKS["Official SDKs"]
+
+SDK["oip-sdk"]
+
+SDKGO["Go SDK"]
+SDKPY["Python SDK"]
+SDKJS["TypeScript SDK"]
+SDKCPP["C++ SDK"]
+
+SDK --> SDKGO
+SDK --> SDKPY
+SDK --> SDKJS
+SDK --> SDKCPP
+
+end
+
+%% =====================================================
+%% RUNTIME
+%% =====================================================
+
+subgraph RT["Official Runtime"]
+
+RUNTIME["oip-runtime"]
+
+Loader["Loader"]
+Lifecycle["Lifecycle"]
+Messaging["Messaging"]
+Health["Health"]
+Telemetry["Telemetry"]
+Configuration["Configuration"]
+
+RUNTIME --> Loader
+RUNTIME --> Lifecycle
+RUNTIME --> Messaging
+RUNTIME --> Health
+RUNTIME --> Telemetry
+RUNTIME --> Configuration
+
+end
+
+%% =====================================================
+%% CAPABILITIES
+%% =====================================================
+
+subgraph CAPS["Capabilities"]
+
+COLOR["oip-capability-color"]
+
+VEHICLE["Vehicle Intelligence"]
+
+PERSON["Person Intelligence"]
+
+FIRE["Fire Detection"]
+
+OCR["OCR"]
+
+AUDIO["Audio Intelligence"]
+
+CUSTOM["Third-party Capabilities"]
+
+end
+
+%% =====================================================
+%% PLATFORM
+%% =====================================================
+
+subgraph PLATFORM["Operational Intelligence Platform"]
+
+OIP["oip"]
+
+Gateway["Gateway"]
+
+NATS["NATS"]
+
+Knowledge["Knowledge"]
+
+Context["Context"]
+
+Decision["Decision"]
+
+Dashboard["Dashboard"]
+
+Storage["Storage"]
+
+end
+
+%% =====================================================
+%% USERS
+%% =====================================================
+
+subgraph USERS["Organizations"]
+
+Police["Police"]
+
+Emergency["Emergency"]
+
+FireDept["FireDept"]
+
+Traffic["Traffic"]
+
+Health["Health"]
+
+Defense["Defense"]
+
+end
+
+%% =====================================================
+%% RELATIONSHIPS
+%% =====================================================
+
+SPEC --> PROTO
+
+SPEC --> SDK
+
+PROTO --> SDK
+
+SDK --> RUNTIME
+
+RUNTIME --> COLOR
+RUNTIME --> VEHICLE
+RUNTIME --> PERSON
+RUNTIME --> FIRE
+RUNTIME --> OCR
+RUNTIME --> AUDIO
+RUNTIME --> CUSTOM
+
+COLOR --> OIP
+VEHICLE --> OIP
+PERSON --> OIP
+FIRE --> OIP
+OCR --> OIP
+AUDIO --> OIP
+CUSTOM --> OIP
+
+OIP --> Police
+OIP --> Emergency
+OIP --> FireDept
+OIP --> Traffic
+OIP --> Health
+OIP --> Defense
+
+%% =====================================================
+%% COLORS
+%% =====================================================
+
+class SPEC,CSpec,OES,OMS,OCL,OCS,CSS,OKS specs
+class PROTO specs
+
+class SDK,SDKGO,SDKPY,SDKJS,SDKCPP runtime
+class RUNTIME,Loader,Lifecycle,Messaging,Health,Telemetry,Configuration runtime
+
+class COLOR,VEHICLE,PERSON,FIRE,OCR,AUDIO,CUSTOM capability
+
+class OIP,Gateway,NATS,Knowledge,Context,Decision,Dashboard,Storage platform
+
+class Police,Emergency,FireDept,Traffic,Health,Defense external

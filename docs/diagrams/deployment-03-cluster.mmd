@@ -1,0 +1,255 @@
+flowchart TB
+
+%% =====================================================
+%% CLIENTS
+%% =====================================================
+
+subgraph CLIENTS["Clients"]
+
+WEB["Web Dashboard"]
+MOBILE["Mobile App"]
+API_CLIENT["External APIs"]
+
+end
+
+%% =====================================================
+%% ENTRYPOINT
+%% =====================================================
+
+INTERNET["Internet / Government Network"]
+
+INGRESS["Ingress Controller (Traefik / NGINX)"]
+
+CLIENTS --> INTERNET
+INTERNET --> INGRESS
+
+%% =====================================================
+%% KUBERNETES CLUSTER
+%% =====================================================
+
+subgraph K8S["Kubernetes Cluster (HA)"]
+
+%% -----------------------------------------------------
+%% CONTROL PLANE
+%% -----------------------------------------------------
+
+subgraph CONTROL["Control Plane"]
+
+API_SERVER["API Server"]
+SCHEDULER["Scheduler"]
+CONTROLLER["Controller Manager"]
+ETCD["etcd"]
+
+end
+
+%% -----------------------------------------------------
+%% PLATFORM SERVICES
+%% -----------------------------------------------------
+
+subgraph PLATFORM["Platform Services"]
+
+GATEWAY["API Gateway"]
+
+IDENTITY["Identity Service"]
+
+CORRELATION["Correlation Engine"]
+
+KNOWLEDGE["Knowledge Engine"]
+
+CONTEXT["Context Engine"]
+
+MEMORY["Operational Memory"]
+
+DECISION["Decision Intelligence"]
+
+MODELREG["Model Registry"]
+
+CAPSTORE["Capability Store"]
+
+end
+
+%% -----------------------------------------------------
+%% EVENT BUS
+%% -----------------------------------------------------
+
+subgraph BUS["Messaging"]
+
+NATS["NATS JetStream Cluster"]
+
+end
+
+%% -----------------------------------------------------
+%% NODE A
+%% -----------------------------------------------------
+
+subgraph NODEA["Worker Node A"]
+
+RTA["Capability Runtime"]
+
+COLOR["Color Capability"]
+
+OCR["OCR Capability"]
+
+end
+
+%% -----------------------------------------------------
+%% NODE B
+%% -----------------------------------------------------
+
+subgraph NODEB["Worker Node B"]
+
+RTB["Capability Runtime"]
+
+VEHICLE["Vehicle Capability"]
+
+PERSON["Person Capability"]
+
+end
+
+%% -----------------------------------------------------
+%% NODE C
+%% -----------------------------------------------------
+
+subgraph NODEC["Worker Node C"]
+
+RTC["Capability Runtime"]
+
+AUDIO["Audio Capability"]
+
+FIRE["Fire Capability"]
+
+CUSTOM["Third-party Capability"]
+
+end
+
+%% -----------------------------------------------------
+%% DATA
+%% -----------------------------------------------------
+
+subgraph DATA["Persistent Services"]
+
+POSTGRES["PostgreSQL HA"]
+
+VALKEY["Valkey Cluster"]
+
+OPENSEARCH["OpenSearch Cluster"]
+
+VECTOR["Qdrant / pgvector"]
+
+MINIO["MinIO"]
+
+FEAST["Feature Store"]
+
+end
+
+%% -----------------------------------------------------
+%% OBSERVABILITY
+%% -----------------------------------------------------
+
+subgraph OBS["Observability"]
+
+OTEL["OpenTelemetry Collector"]
+
+PROM["Prometheus"]
+
+LOKI["Loki"]
+
+TEMPO["Tempo"]
+
+GRAFANA["Grafana"]
+
+end
+
+end
+
+%% =====================================================
+%% FLOWS
+%% =====================================================
+
+INGRESS --> GATEWAY
+
+GATEWAY --> IDENTITY
+GATEWAY --> NATS
+
+NATS --> RTA
+NATS --> RTB
+NATS --> RTC
+
+RTA --> COLOR
+RTA --> OCR
+
+RTB --> VEHICLE
+RTB --> PERSON
+
+RTC --> AUDIO
+RTC --> FIRE
+RTC --> CUSTOM
+
+COLOR --> NATS
+OCR --> NATS
+VEHICLE --> NATS
+PERSON --> NATS
+AUDIO --> NATS
+FIRE --> NATS
+CUSTOM --> NATS
+
+NATS --> CORRELATION
+
+CORRELATION --> KNOWLEDGE
+
+KNOWLEDGE --> CONTEXT
+
+CONTEXT --> MEMORY
+
+MEMORY --> DECISION
+
+KNOWLEDGE --> MODELREG
+KNOWLEDGE --> CAPSTORE
+
+KNOWLEDGE --> POSTGRES
+KNOWLEDGE --> OPENSEARCH
+KNOWLEDGE --> VALKEY
+KNOWLEDGE --> VECTOR
+KNOWLEDGE --> MINIO
+KNOWLEDGE --> FEAST
+
+GATEWAY --> OTEL
+CORRELATION --> OTEL
+KNOWLEDGE --> OTEL
+CONTEXT --> OTEL
+MEMORY --> OTEL
+DECISION --> OTEL
+RTA --> OTEL
+RTB --> OTEL
+RTC --> OTEL
+
+OTEL --> PROM
+OTEL --> LOKI
+OTEL --> TEMPO
+
+PROM --> GRAFANA
+LOKI --> GRAFANA
+TEMPO --> GRAFANA
+
+%% =====================================================
+%% STYLES
+%% =====================================================
+
+classDef gateway fill:#1E3A5F,color:#fff,stroke:#5DADE2,stroke-width:2px;
+classDef runtime fill:#512E5F,color:#fff,stroke:#BB8FCE,stroke-width:2px;
+classDef knowledge fill:#145A32,color:#fff,stroke:#58D68D,stroke-width:2px;
+classDef storage fill:#6E2C00,color:#fff,stroke:#F5B041,stroke-width:2px;
+classDef infra fill:#424949,color:#fff,stroke:#D5D8DC,stroke-width:2px;
+classDef obs fill:#7D6608,color:#fff,stroke:#F7DC6F,stroke-width:2px;
+
+class GATEWAY,IDENTITY,NATS gateway;
+
+class RTA,RTB,RTC,COLOR,OCR,VEHICLE,PERSON,AUDIO,FIRE,CUSTOM runtime;
+
+class CORRELATION,KNOWLEDGE,CONTEXT,MEMORY,DECISION,MODELREG,CAPSTORE knowledge;
+
+class POSTGRES,VALKEY,OPENSEARCH,VECTOR,MINIO,FEAST storage;
+
+class API_SERVER,SCHEDULER,CONTROLLER,ETCD infra;
+
+class OTEL,PROM,LOKI,TEMPO,GRAFANA obs;
