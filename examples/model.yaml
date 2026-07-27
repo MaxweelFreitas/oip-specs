@@ -1,9 +1,19 @@
-# Example Model
-
-name: ExampleModel
-version: 1.0.0
-fields:
-  - name: id
-    type: string
-  - name: value
-    type: integer
+apiVersion: oip.vcinova.com/v1
+kind: ModelRegistration
+metadata:
+  name: yolov10x
+  version: "1.2.0"
+  framework: "pytorch"
+spec:
+  capability_supported: "object_detection"
+  inference_runtime: "onnx_runtime"
+  model_format: "onnx"
+  artifacts:
+    weights_uri: "s3://oip-models/vision/yolov10x/v1.2.0/model.onnx"
+    config_uri: "s3://oip-models/vision/yolov10x/v1.2.0/config.json"
+  metrics:
+    mAP: 0.542
+    precision: 0.891
+    recall: 0.865
+    latency_p95_ms: 18.4
+  lifecycle_stage: "production"

@@ -1,11 +1,199 @@
 {
-  "$schema": "http://json-schema.org/draft-07/schema#",
-  "title": "Capability",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "OIP Capability Event Schema",
+  "description": "Standardized schema for multimodal AI capabilities and workers output in the Operational Intelligence Platform (OIP)",
   "type": "object",
+  "required": [
+    "specversion",
+    "id",
+    "source",
+    "type",
+    "time",
+    "datacontenttype",
+    "dataschema",
+    "data"
+  ],
   "properties": {
-    "name": { "type": "string" },
-    "version": { "type": "string" },
-    "description": { "type": "string" }
-  },
-  "required": ["name", "version"]
+    "specversion": {
+      "type": "string",
+      "const": "1.0",
+      "description": "CloudEvents specification version"
+    },
+    "id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Unique identifier for the event"
+    },
+    "source": {
+      "type": "string",
+      "description": "URI identifying the occurrence context (e.g. /ai/worker/fire-detector)"
+    },
+    "type": {
+      "type": "string",
+      "description": "Event type following naming hierarchy (e.g. ai.detection.completed)",
+      "pattern": "^[a-z0-9-]+(\\.[a-z0-9-]+)*$"
+    },
+    "subject": {
+      "type": "string",
+      "description": "Subject of the event in the context of the event producer (e.g. camera.cam-001)"
+    },
+    "time": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Timestamp when the occurrence happened"
+    },
+    "datacontenttype": {
+      "type": "string",
+      "const": "application/json"
+    },
+    "dataschema": {
+      "type": "string",
+      "default": "oip.ai.capability.v1"
+    },
+    "tenant_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Logical tenant identifier"
+    },
+    "organization_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Organization identifier"
+    },
+    "correlation_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Trace correlation identifier across distributed calls"
+    },
+    "data": {
+      "type": "object",
+      "required": [
+        "execution_id",
+        "pipeline_id",
+        "worker_id",
+        "capability",
+        "model",
+        "execution_timestamp",
+        "results"
+      ],
+      "properties": {
+        "execution_id": {
+          "type": "string",
+          "format": "uuid",
+          "description": "Unique inference execution run ID"
+        },
+        "pipeline_id": {
+          "type": "string",
+          "description": "Pipeline or operational policy identifier"
+        },
+        "worker_id": {
+          "type": "string",
+          "description": "Identifier of the specific AI Worker instance"
+        },
+        "capability": {
+          "type": "string",
+          "enum": [
+            "object_detection",
+            "classification",
+            "segmentation",
+            "ocr",
+            "speech_to_text",
+            "audio_classification",
+            "face_recognition",
+            "person_reid",
+            "embedding",
+            "similarity_search",
+            "nlp",
+            "llm",
+            "multimodal",
+            "anomaly_detection",
+            "forecasting",
+            "custom"
+          ],
+          "description": "Standardized AI capability type"
+        },
+        "model": {
+          "type": "object",
+          "required": ["name", "version", "framework", "runtime"],
+          "properties": {
+            "name": { "type": "string" },
+            "version": { "type": "string" },
+            "framework": { "type": "string" },
+            "runtime": { "type": "string" }
+          }
+        },
+        "execution_timestamp": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "latency_ms": {
+          "type": "number",
+          "description": "Model inference execution time in milliseconds"
+        },
+        "source_metadata": {
+          "type": "object",
+          "description": "Contextual metadata about the source media/data",
+          "properties": {
+            "source_id": { "type": "string" },
+            "source_type": { "type": "string" },
+            "frame_id": { "type": "string" },
+            "timestamp": { "type": "string", "format": "date-time" }
+          }
+        },
+        "results": {
+          "type": "object",
+          "description": "Polymorphic payload specific to the model capability",
+          "properties": {
+            "detections": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "required": ["class", "confidence", "bounding_box"],
+                "properties": {
+                  "class": { "type": "string" },
+                  "confidence": { "type": "number", "minimum": 0, "maximum": 1 },
+                  "bounding_box": {
+                    "type": "object",
+                    "required": ["x", "y", "width", "height"],
+                    "properties": {
+                      "x": { "type": "number" },
+                      "y": { "type": "number" },
+                      "width": { "type": "number" },
+                      "height": { "type": "number" }
+                    }
+                  },
+                  "tracking_id": { "type": "string" },
+                  "attributes": { "type": "object" }
+                }
+              }
+            },
+            "text": {
+              "type": "string",
+              "description": "Extracted or transcribed text for OCR / STT"
+            },
+            "language": {
+              "type": "string",
+              "description": "Detected language code (e.g. pt-BR)"
+            },
+            "vector": {
+              "type": "array",
+              "items": { "type": "number" },
+              "description": "Float array for vector embeddings"
+            },
+            "classification": {
+              "type": "object",
+              "properties": {
+                "label": { "type": "string" },
+                "confidence": { "type": "number", "minimum": 0, "maximum": 1 }
+              }
+            },
+            "custom_payload": {
+              "type": "object",
+              "description": "Additional domain-specific metadata"
+            }
+          }
+        }
+      }
+    }
+  }
 }

@@ -1,11 +1,81 @@
 {
-  "$schema": "http://json-schema.org/draft-07/schema#",
-  "title": "Event",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "OIP Base CloudEvent Envelope Schema",
+  "description": "Standardized CloudEvents 1.0 envelope schema for all asynchronous events published to the NATS JetStream event bus in the Operational Intelligence Platform (OIP)",
   "type": "object",
+  "required": [
+    "specversion",
+    "id",
+    "source",
+    "type",
+    "time",
+    "datacontenttype",
+    "data"
+  ],
   "properties": {
-    "name": { "type": "string" },
-    "timestamp": { "type": "string", "format": "date-time" },
-    "data": { "type": "object" }
-  },
-  "required": ["name", "timestamp"]
+    "specversion": {
+      "type": "string",
+      "const": "1.0",
+      "description": "CloudEvents specification version"
+    },
+    "id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Unique event identifier (UUID v7 or v4)"
+    },
+    "source": {
+      "type": "string",
+      "description": "URI-reference identifying the context in which an event happened (e.g., /oip/core/incident-service)"
+    },
+    "type": {
+      "type": "string",
+      "description": "The event type conforming to naming hierarchy (e.g., incident.created, ai.detection.completed)",
+      "pattern": "^[a-z0-9-]+(\\.[a-z0-9-]+)*$"
+    },
+    "subject": {
+      "type": "string",
+      "description": "The subject of the event in the context of the event producer (e.g., incident.inc_789)"
+    },
+    "time": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Timestamp of when the occurrence happened (ISO 8601 UTC)"
+    },
+    "datacontenttype": {
+      "type": "string",
+      "enum": [
+        "application/json",
+        "application/protobuf"
+      ],
+      "description": "Content type of the data payload"
+    },
+    "dataschema": {
+      "type": "string",
+      "description": "URI identifying the schema that data adheres to"
+    },
+    "tenant_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Multi-tenant isolation identifier"
+    },
+    "organization_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Organization unit identifier"
+    },
+    "correlation_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Distributed tracing correlation identifier linking related causal actions"
+    },
+    "causation_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Identifier of the specific event or command that caused this event"
+    },
+    "data": {
+      "type": "object",
+      "description": "Domain-specific or capability-specific event payload"
+    }
+  }
 }

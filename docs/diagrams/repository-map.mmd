@@ -1,0 +1,65 @@
+%% OIP - Operational Intelligence Platform
+%% Mapa Arquitetural do Repositório - Monorepo Structure Map
+
+graph TD
+    Root[oip/ - Monorepo Root] --> Apps[apps/]
+    Root --> Services[services/]
+    Root --> Workers[workers/]
+    Root --> Packages[packages/]
+    Root --> Proto[proto/]
+    Root --> Deployments[deployments/]
+    Root --> Docs[docs/]
+    Root --> Schemas[schemas/]
+    Root --> Scripts[scripts/]
+
+    %% Apps
+    Apps --> AppDashboard[dashboard/ - Next.js App Router]
+    Apps --> AppAdmin[admin-console/]
+
+    %% Services - Backend Go - Clean Arch
+    Services --> SvcIdentity[identity-service/]
+    Services --> SvcIncident[incident-service/]
+    Services --> SvcDispatch[dispatch-service/]
+    Services --> SvcSearch[search-service/]
+    Services --> SvcAudit[audit-service/]
+    Services --> SvcStreaming[streaming-service/]
+
+    %% Workers - AI Python
+    Workers --> WrkVision[vision-workers/]
+    Workers --> WrkAudio[audio-workers/]
+    Workers --> WrkNLP[nlp-workers/]
+    Workers --> WrkRuntime[ai-runtime/]
+
+    %% Packages - Shared Go libraries
+    Packages --> PkgAuth[auth/]
+    Packages --> PkgLogger[logger/]
+    Packages --> PkgEvents[events/]
+    Packages --> PkgCrypto[crypto/]
+    Packages --> PkgTelemetry[telemetry/]
+
+    %% Proto - Protobuf Contracts
+    Proto --> ProtoInc[incident/]
+    Proto --> ProtoCam[camera/]
+    Proto --> ProtoAI[ai/]
+
+    %% Deployments
+    Deployments --> DepHelm[helm/oip/]
+    Deployments --> DepTerraform[terraform/]
+    Deployments --> DepArgo[argocd/]
+    Deployments --> DepIstio[istio/]
+
+    %% Docs & Schemas
+    Docs --> DocArch[architecture/]
+    Docs --> DocADR[adr/]
+    Schemas --> SchCapability[capability.schema.json]
+    Schemas --> SchEvent[event.schema.json]
+    Schemas --> SchModel[model.schema.json]
+
+    style Root fill:#f2f4f4,stroke:#333,stroke-width:2px
+    style Apps fill:#eaf2f8,stroke:#333,stroke-width:1px
+    style Services fill:#e8f8f5,stroke:#333,stroke-width:1px
+    style Workers fill:#fef9e7,stroke:#333,stroke-width:1px
+    style Packages fill:#f5eeF8,stroke:#333,stroke-width:1px
+    style Proto fill:#fbeaec,stroke:#333,stroke-width:1px
+    style Deployments fill:#eef2f7,stroke:#333,stroke-width:1px
+    style Schemas fill:#d4efdf,stroke:#333,stroke-width:1px

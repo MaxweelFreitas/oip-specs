@@ -1,0 +1,26 @@
+{
+  "specversion": "1.0",
+  "id": "8b0b9c76-13c5-5g60-885d-9874678b2302",
+  "source": "/oip/ai/runtime/yolov10",
+  "type": "oip.ai.detection.completed.v1",
+  "time": "2026-07-27T08:00:01Z",
+  "datacontenttype": "application/json",
+  "tenant_id": "tenant-corp-01",
+  "correlation_id": "corr-uuid-998877",
+  "data": {
+    "capability": "object_detection",
+    "model": "yolov10x",
+    "version": "1.2.0",
+    "source_id": "cam-sector-4",
+    "results": [
+      {
+        "class": "fire",
+        "confidence": 0.94,
+        "bbox": [100, 200, 150, 250],
+        "attributes": {
+          "severity": "critical"
+        }
+      }
+    ]
+  }
+}

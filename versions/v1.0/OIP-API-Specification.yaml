@@ -1,0 +1,124 @@
+openapi: 3.0.3
+info:
+  title: Operational Intelligence Platform (OIP) - Core API
+  description: Contrato de API OpenAPI 3.0 para o Platform Kernel da OIP (Incidentes, Câmeras e Autenticação).
+  version: 1.0.0
+servers:
+  - url: https://api.oip.local/v1
+    description: Servidor de Produção On-Premises
+paths:
+  /auth/login:
+    post:
+      summary: Autenticação de Operador
+      description: Autentica o usuário utilizando credenciais e retorna um token PASETO seguro.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - username
+                - password
+              properties:
+                username:
+                  type: string
+                password:
+                  type: string
+      responses:
+        '200':
+          description: Autenticação bem-sucedida
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token:
+                    type: string
+                    description: Token PASETO v4 gerado para a sessão.
+  /incidents:
+    get:
+      summary: Listar Incidentes Ativos
+      description: Retorna a lista de incidentes filtrados por tenant e status operacional.
+      parameters:
+        - name: tenant_id
+          in: header
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: status
+          in: query
+          required: false
+          schema:
+            type: string
+            enum: [OPEN, INVESTIGATING, RESOLVED, CLOSED]
+      responses:
+        '200':
+          description: Lista de incidentes retornada com sucesso
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Incident'
+    post:
+      summary: Criar Novo Incidente
+      description: Registra manualmente ou via automação um novo incidente no sistema.
+      parameters:
+        - name: tenant_id
+          in: header
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IncidentInput'
+      responses:
+        '201':
+          description: Incidente criado com sucesso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Incident'
+
+components:
+  schemas:
+    Incident:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        title:
+          type: string
+        priority:
+          type: string
+          enum: [LOW, MEDIUM, HIGH, CRITICAL]
+        status:
+          type: string
+          enum: [OPEN, INVESTIGATING, RESOLVED, CLOSED]
+        camera_id:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+    IncidentInput:
+      type: object
+      required:
+        - title
+        - priority
+      properties:
+        title:
+          type: string
+        priority:
+          type: string
+          enum: [LOW, MEDIUM, HIGH, CRITICAL]
+        camera_id:
+          type: string
+        description:
+          type: string

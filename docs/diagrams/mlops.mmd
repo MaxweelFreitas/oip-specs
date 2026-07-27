@@ -1,0 +1,36 @@
+%% OIP - Operational Intelligence Platform
+%% Diagrama de Pipeline de MLOps, CI/CD de Modelos e Inferência de Produção
+
+graph TD
+    subgraph Development [Desenvolvimento & Treinamento]
+        A[Pesquisa & Desenvolvimento de Modelos] -->|Dataset Rotulado| B[Pipeline de Treinamento - PyTorch / Ultralytics]
+        B -->|Métricas de Validação| C[Avaliação de Qualidade - mAP / Recall / F1]
+    end
+
+    subgraph Registry [Governança & Model Registry]
+        C -->|Aprovação| D[Model Registry - model.schema.json]
+        D -->|Armazenamento de Pesos - .onnx / .gguf| E[MinIO - Object Storage]
+    end
+
+    subgraph CI_CD [Pipeline de Integração Contínua - CI/CD]
+        D -->|Trigger GitOps| F[ArgoCD / Argo Workflows]
+        F -->|Empacotamento de Imagem Docker| G[Build Distroless Container]
+    end
+
+    subgraph Production [Ambiente de Produção On-Premises - K3s]
+        G --> H[AI Runtime / AI Workers - ONNX Runtime / Llama.cpp]
+        E -->|Download de Pesos Verificados - SHA-256| H
+        H -->|Inferência em Tempo Real - GPU CUDA| I[Barramento NATS JetStream - CloudEvents + Protobuf]
+    end
+
+    subgraph Monitoring [Observabilidade & Feedback Loop]
+        I --> J[Prometheus & Grafana - Métricas de VRAM e Latência P95]
+        J --> K[Feedback Loop de Operadores - Falsos Positivos]
+        K --> A
+    end
+
+    style Development fill:#f4f6f7,stroke:#333,stroke-width:1px
+    style Registry fill:#eaf2f8,stroke:#333,stroke-width:1px
+    style CI_CD fill:#fef9e7,stroke:#333,stroke-width:1px
+    style Production fill:#e8f8f5,stroke:#333,stroke-width:1px
+    style Monitoring fill:#f5eeF8,stroke:#333,stroke-width:1px

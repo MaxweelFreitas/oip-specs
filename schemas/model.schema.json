@@ -1,21 +1,155 @@
 {
-  "$schema": "http://json-schema.org/draft-07/schema#",
-  "title": "Model",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "OIP Model Registry Schema",
+  "description": "Standardized schema for registering, versioning, and managing AI models within the Model Registry of the Operational Intelligence Platform (OIP)",
   "type": "object",
+  "required": [
+    "model_id",
+    "name",
+    "version",
+    "capability",
+    "framework",
+    "runtime",
+    "status",
+    "artifact"
+  ],
   "properties": {
-    "name": { "type": "string" },
-    "version": { "type": "string" },
-    "fields": {
-      "type": "array",
-      "items": {
-        "type": "object",
-        "properties": {
-          "name": { "type": "string" },
-          "type": { "type": "string" }
+    "model_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Unique unique identifier for the model entity"
+    },
+    "name": {
+      "type": "string",
+      "description": "Human-readable unique model name (e.g., yolo-fire-detector)"
+    },
+    "version": {
+      "type": "string",
+      "description": "Semantic version of the model (e.g., 1.2.0)",
+      "pattern": "^(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)(?:-((?:0|[1-9]\\d*|\\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\\.(?:0|[1-9]\\d*|\\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\\+([0-9a-zA-Z-]+(?:\\.[0-9a-zA-Z-]+)*))?$"
+    },
+    "capability": {
+      "type": "string",
+      "enum": [
+        "object_detection",
+        "classification",
+        "segmentation",
+        "ocr",
+        "speech_to_text",
+        "audio_classification",
+        "face_recognition",
+        "person_reid",
+        "embedding",
+        "similarity_search",
+        "nlp",
+        "llm",
+        "multimodal",
+        "anomaly_detection",
+        "forecasting",
+        "custom"
+      ],
+      "description": "Associated OIP AI capability type"
+    },
+    "framework": {
+      "type": "string",
+      "description": "Training framework used (e.g., pytorch, tensorflow, transformers, ultralytics)"
+    },
+    "runtime": {
+      "type": "string",
+      "enum": [
+        "onnx_runtime",
+        "tensorrt",
+        "openvino",
+        "llama_cpp",
+        "ollama",
+        "pytorch_native",
+        "vllm",
+        "custom"
+      ],
+      "description": "Inference engine runtime required"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "dev",
+        "test",
+        "staging",
+        "production",
+        "deprecated"
+      ],
+      "description": "Model lifecycle status"
+    },
+    "artifact": {
+      "type": "object",
+      "required": [
+        "storage_uri",
+        "checksum_sha256",
+        "file_size_bytes"
+      ],
+      "properties": {
+        "storage_uri": {
+          "type": "string",
+          "description": "MinIO or object storage URI for model weights (e.g., s3://oip-models/fire/v1.2.0/model.onnx)"
         },
-        "required": ["name", "type"]
+        "checksum_sha256": {
+          "type": "string",
+          "description": "SHA-256 cryptographic hash of the model weights file for integrity verification"
+        },
+        "file_size_bytes": {
+          "type": "integer",
+          "description": "Size of the artifact file in bytes"
+        }
       }
+    },
+    "specifications": {
+      "type": "object",
+      "properties": {
+        "precision": {
+          "type": "string",
+          "enum": [
+            "fp32",
+            "fp16",
+            "int8",
+            "mixed"
+          ]
+        },
+        "input_shape": {
+          "type": "array",
+          "items": {
+            "type": "integer"
+          },
+          "description": "Expected tensor input dimensions (e.g., [1, 3, 640, 640])"
+        },
+        "classes": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "List of output class labels supported by the model"
+        }
+      }
+    },
+    "performance_benchmark": {
+      "type": "object",
+      "properties": {
+        "hardware_target": {
+          "type": "string",
+          "description": "Hardware environment used for benchmarks (e.g., NVIDIA RTX 4090)"
+        },
+        "latency_p95_ms": {
+          "type": "number"
+        },
+        "throughput_fps": {
+          "type": "number"
+        },
+        "vram_consumed_mb": {
+          "type": "number"
+        }
+      }
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time"
     }
-  },
-  "required": ["name", "version", "fields"]
+  }
 }

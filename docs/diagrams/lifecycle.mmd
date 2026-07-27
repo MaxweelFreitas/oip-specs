@@ -1,0 +1,36 @@
+%% OIP - Operational Intelligence Platform
+%% Diagrama do Ciclo de Vida de um Incidente (Incident Lifecycle)
+
+stateDiagram-v2
+    [*] --> Aberto: AI Worker gera alerta crítico ou Operador abre manualmente
+    
+    state Aberto {
+        [*] --> TriagemPendente
+        TriagemPendente --> EmTriagem: Operador assume o caso
+        EmTriagem --> Descartado: Operador marca como Falso Positivo / Feedback Loop
+        EmTriagem --> Validado: Operador confirma a ocorrência
+    }
+
+    Descartado --> [*]: Evento arquivado / Feedback enviado ao AI Worker
+
+    Validado --> EmAtendimento: Acionamento do Dispatch Service / Recursos em campo
+    
+    state EmAtendimento {
+        [*] --> UnidadeDespachada
+        UnidadeDespachada --> RecursoNoLocal: Unidade chega ao destino (ETA atingido)
+        RecursoNoLocal --> AtendimentoEmAndamento: Ações táticas e mitigação
+    }
+
+    AtendimentoEmAndamento --> Concluido: Ocorrência resolvida e evidências anexadas
+    
+    state Concluido {
+        [*] --> AuditoriaPendente
+        AuditoriaPendente --> RelatorioGerado: Justificativa e Chain of Custody validados
+    }
+
+    RelatorioGerado --> Encerrado: Supervisor fecha formalmente o incidente
+    
+    Encerrado --> Reaberto: Nova evidência crítica ou ordem judicial
+    Reaberto --> EmAtendimento: Retomada das operações
+    
+    Encerrado --> [*]: Arquivamento de Longo Prazo (Cold Storage / MinIO Parquet)

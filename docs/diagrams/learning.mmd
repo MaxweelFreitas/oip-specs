@@ -1,0 +1,37 @@
+%% OIP - Operational Intelligence Platform
+%% Diagrama de Aprendizado Contínuo, Feedback Loop e Retreinamento de IA
+
+graph TD
+    subgraph Operations [Operação em Tempo Real]
+        A[Detecção / Inferência do AI Worker] -->|Gera Alerta/Incidente| B[Dashboard Operacional - Next.js]
+        B -->|Ação do Operador| C{Avaliação Humana}
+    end
+
+    subgraph Feedback [Mecanismo de Feedback Loop]
+        C -->|Confirmação / Verdadeiro Positivo| D[Registro no Banco de Dados Transacional]
+        C -->|Falso Positivo / Alarme Falso| E[Armazenagem em Bucket de Revisão - MinIO]
+        C -->|Falso Negativo / Ocorrência Perdida| E
+    end
+
+    subgraph Curation [Curagem e Preparação de Dados]
+        E --> F[Curagem de Dataset e Rotulagem]
+        F --> G[Versionamento de Dataset]
+    end
+
+    subgraph Training [Treinamento e Transfer Learning]
+        G --> H[Pipeline de Fine-Tuning / Transfer Learning]
+        H --> I[Validação de Métricas - mAP / Precision / Recall]
+    end
+
+    subgraph Registry [Model Registry & Deploy]
+        I -->|Aprovação de Qualidade| J[Model Registry - model.schema.json]
+        J --> K[Exportação para ONNX / TensorRT]
+        K --> L[Deploy Automatizado no AI Runtime via GitOps/ArgoCD]
+        L --> A
+    end
+
+    style Operations fill:#f0f4f8,stroke:#333,stroke-width:1px
+    style Feedback fill:#fef9e7,stroke:#333,stroke-width:1px
+    style Curation fill:#fcf3cf,stroke:#333,stroke-width:1px
+    style Training fill:#ebdef0,stroke:#333,stroke-width:1px
+    style Registry fill:#d4efdf,stroke:#333,stroke-width:1px

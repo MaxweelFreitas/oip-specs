@@ -1,0 +1,37 @@
+%% OIP - Operational Intelligence Platform
+%% Diagrama de Sequência e Arquitetura de Eventos (NATS JetStream & CloudEvents)
+
+sequenceDiagram
+    autonumber
+    actor Device as Câmeras / Dispositivos / Sensores
+    participant Ingestion as Ingestion / Edge Gateway
+    participant NATS as NATS JetStream (Barramento)
+    participant AI as AI Runtime / Workers
+    participant Core as Incident & Core Services
+    participant DB as Event Store & Read Models
+    participant UI as Dashboard Next.js / Realtime Gateway
+
+    Device->>Ingestion: Stream RTSP / Áudio / Telemetria / IoT
+    Ingestion->>NATS: Publica ingestão normalizada (ingestion.received)
+    
+    rect rgb(240, 245, 255)
+        note right of NATS: Camada de Inteligência Operacional
+        NATS->>AI: Consome stream/frame/áudio
+        AI->>AI: Executa inferência (ONNX / Llama.cpp)
+        AI->>NATS: Publica evento de capacidade (ai.detection.completed / capability.schema.json)
+    end
+
+    rect rgb(255, 240, 240)
+        note right of NATS: Motor de Regras e Gestão de Incidentes
+        NATS->>Core: Consome ai.detection.* via Consumer Groups
+        Core->>DB: Persiste evento imutável (Event Sourcing)
+        Core->>Core: Motor de Correlação e Deduplicação de Alertas
+        Core->>DB: Atualiza Projeções Read Models (PostgreSQL/PostGIS)
+        Core->>NATS: Publica incident.created / incident.status_updated
+    end
+
+    rect rgb(240, 255, 240)
+        note right of NATS: Distribuição e Resposta Operacional
+        NATS->>UI: Notifica via Realtime Gateway (WebSocket)
+        UI->>Device: Exibe stream em tempo real via WebRTC (MediaMTX)
+    end

@@ -1,0 +1,42 @@
+%% OIP - Operational Intelligence Platform
+%% Diagrama da Arquitetura do AI Runtime e Execução de Inferência - Runtime Architecture
+
+graph TD
+    subgraph Sources [Fontes de Mídia & Ingestão]
+        C[Câmeras / Bodycams / Áudios] -->|RTSP / gRPC Stream| IM[Ingestion Core / MediaMTX]
+    end
+
+    subgraph Runtime [AI Runtime & Gerenciamento de Recursos]
+        IM -->|Distribuição de Frames / Buffers| AIR[AI Runtime Service]
+        
+        subgraph Engine [Motor de Inferência Otimizado]
+            AIR -->|Gerenciamento de VRAM & Batching| ONNX[ONNX Runtime / TensorRT]
+            AIR -->|Quantização & Cache em Memória| LLM[Llama.cpp / Ollama Engine]
+        end
+    end
+
+    subgraph Workers [AI Workers Especializados]
+        ONNX --> W1[Detector - YOLOv10 / RT-DETR]
+        ONNX --> W2[OCR & Placas - PaddleOCR]
+        ONNX --> W3[Embeddings - CLIP / BGE-M3]
+        LLM --> W4[Áudio & NLP - Whisper / Llama3]
+    end
+
+    subgraph Bus [Barramento de Eventos Asíncronos]
+        W1 -->|Publica Contrato - capability.schema.json| NATS[NATS JetStream]
+        W2 -->|Publica Contrato - capability.schema.json| NATS
+        W3 -->|Publica Contrato - capability.schema.json| NATS
+        W4 -->|Publica Contrato - capability.schema.json| NATS
+    end
+
+    subgraph Hardware [Infraestrutura Física On-Premises]
+        GPU[NVIDIA GPU / CUDA Cores] --- ONNX
+        CPU[CPUs / RAM] --- LLM
+    end
+
+    style Sources fill:#f4f6f7,stroke:#333,stroke-width:1px
+    style Runtime fill:#eaf2f8,stroke:#333,stroke-width:1px
+    style Engine fill:#e8f8f5,stroke:#333,stroke-width:1px
+    style Workers fill:#fef9e7,stroke:#333,stroke-width:1px
+    style Bus fill:#f5eeF8,stroke:#333,stroke-width:1px
+    style Hardware fill:#fbeaec,stroke:#333,stroke-width:1px

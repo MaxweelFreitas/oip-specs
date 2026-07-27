@@ -1,0 +1,21 @@
+{
+  "specversion": "1.0",
+  "id": "7a9a8b65-02b4-4f59-994c-8763567a1201",
+  "source": "/oip/services/incident-service",
+  "type": "oip.incident.created.v1",
+  "time": "2026-07-27T08:00:00Z",
+  "datacontenttype": "application/json",
+  "tenant_id": "tenant-corp-01",
+  "correlation_id": "corr-uuid-998877",
+  "data": {
+    "incident_id": "inc-uuid-112233",
+    "title": "Detecção de Incêndio em Área Restrita",
+    "priority": "HIGH",
+    "status": "OPEN",
+    "camera_id": "cam-sector-4",
+    "location": {
+      "lat": -3.689,
+      "lng": -40.345
+    }
+  }
+}

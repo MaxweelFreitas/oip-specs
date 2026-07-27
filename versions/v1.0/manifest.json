@@ -1,0 +1,19 @@
+{
+  "version": "1.0.0",
+  "status": "Production-Ready",
+  "release_date": "2026-07-27",
+  "description": "Manifesto de Release v1.0 da Operational Intelligence Platform (OIP)",
+  "schemas": {
+    "capability": "schemas/capability.schema.json",
+    "event": "schemas/event.schema.json",
+    "model": "schemas/model.schema.json"
+  },
+  "specifications_count": 17,
+  "architecture_components": [
+    "Ingestion Core",
+    "AI Runtime",
+    "NATS JetStream",
+    "PostgreSQL + PostGIS + pgvector",
+    "MinIO Object Storage"
+  ]
+}

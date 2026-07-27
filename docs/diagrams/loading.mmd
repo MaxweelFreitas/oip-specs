@@ -1,0 +1,47 @@
+%% OIP - Operational Intelligence Platform
+%% Diagrama de Sequência e Arquitetura de Inicialização (Boot & Loading Sequence)
+
+sequenceDiagram
+    autonumber
+    participant K3s as Kubernetes / K3s (Orquestrador)
+    participant Vault as HashiCorp Vault (Secrets)
+    participant NATS as NATS JetStream (Barramento)
+    participant DB as PostgreSQL + Migrations (SQLC)
+    participant Core as Microsserviços Core (Go / Clean Arch)
+    participant AI as AI Runtime & Workers (Python / ONNX)
+    participant UI as Dashboard / Realtime Gateway (Next.js)
+
+    Note over K3s, UI: Fase de Inicialização e Boot da Plataforma OIP (On-Premises / Edge)
+
+    K3s->>Vault: Injeta secrets via Vault Agent Sidecar (mTLS certs & DB credentials)
+    Vault-->>K3s: Credenciais e certificados seguros injetados na memória dos Pods
+
+    K3s->>DB: Executa migrations automáticas (SQLC / DDL schemas)
+    DB-->>K3s: Esquema transacional e extensões (PostGIS / pgvector) prontos
+
+    K3s->>NATS: Inicializa Cluster NATS JetStream (Streams & Consumers configurados)
+    NATS-->>K3s: Barramento de eventos pronto para receber mensagens
+
+    rect rgb(240, 245, 255)
+        note right of Core: Inicialização dos Serviços de Domínio
+        K3s->>Core: Inicia Identity, Incident, Dispatch, Search e Audit Services
+        Core->>DB: Valida conexão transacional
+        Core->>NATS: Conecta ao barramento via mTLS e valida streams
+        Core-->>K3s: Health Checks OK (/health/ready)
+    end
+
+    rect rgb(255, 240, 240)
+        note right of AI: Inicialização do Runtime de Inteligência Artificial
+        K3s->>AI: Inicializa AI Runtime & Workers (Carrega Modelos ONNX na VRAM)
+        AI->>NATS: Registra capacidade no barramento de eventos
+        AI-->>K3s: GPU alloc e Model Registry validados
+    end
+
+    rect rgb(240, 255, 240)
+        note right of UI: Inicialização da Camada de Apresentação
+        K3s->>UI: Inicializa Realtime Gateway e Dashboard (Next.js)
+        UI->>NATS: Conecta aos fluxos de eventos operacionais
+        UI-->>K3s: Aplicação web pronta para acesso dos operadores
+    end
+
+    Note over K3s, UI: Plataforma Operacional OIP 100% Operacional e Segura (Zero Trust)

@@ -1,0 +1,59 @@
+%% OIP - Operational Intelligence Platform
+%% Diagrama Conceitual de Base de Conhecimento, RAG e Arquitetura de IA Multimodal
+
+graph TB
+    subgraph Sources [Fontes de Dados Heterogêneas]
+        S1[Videos e Frames - MinIO]
+        S2[Áudios e Transcrições - Whisper]
+        S3[Documentos e Manuais SOPs - PDF/TXT]
+        S4[Logs e Relatórios Históricos]
+    end
+
+    subgraph Pipeline [Pipeline de Ingestão e Vetorização]
+        P1[Text Splitter / Chunking]
+        P2[Embedding Models - BGE-M3 / Sentence Transformers]
+        P3[Extração de Metadados e Chaves]
+    end
+
+    subgraph Storage [Camada de Persistência Poliglota]
+        DB1[(PostgreSQL + pgvector<br>Busca Semântica & Vetorial)]
+        DB2[(OpenSearch<br>Busca Textual Completa & OCR)]
+        DB3[(MinIO<br>Blob Storage - Parquet / Raw Files)]
+    end
+
+    subgraph Intelligence [RAG & LLM Runtime Engine]
+        RAG[Hybrid Search & Re-ranking]
+        LLM[LLM Local - Llama.cpp / Ollama / GGUF]
+        Prompt[Prompt Management & Versioning]
+    end
+
+    subgraph Interface [Consumo Operacional]
+        UI[Dashboard Next.js / Assistente Operacional]
+        API[gRPC / REST API Gateway]
+    end
+
+    %% Fluxos de Conexão
+    S1 --> P2
+    S2 --> P1
+    S3 --> P1
+    S4 --> P1
+
+    P1 --> P2
+    P2 --> DB1
+    S3 --> DB2
+    S1 --> DB3
+
+    UI --> API
+    API --> RAG
+    RAG --> DB1
+    RAG --> DB2
+    RAG --> Prompt
+    Prompt --> LLM
+    LLM --> API
+    API --> UI
+
+    style Sources fill:#f9f9f9,stroke:#333,stroke-width:1px
+    style Pipeline fill:#eef2f7,stroke:#333,stroke-width:1px
+    style Storage fill:#e8f4f8,stroke:#333,stroke-width:1px
+    style Intelligence fill:#f5eeF8,stroke:#333,stroke-width:1px
+    style Interface fill:#eafaf1,stroke:#333,stroke-width:1px

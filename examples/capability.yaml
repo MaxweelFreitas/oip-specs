@@ -1,5 +1,20 @@
-# Example Capability
-
-name: ExampleCapability
-version: 1.0.0
-description: An example capability for demonstration purposes.
+apiVersion: oip.vcinova.com/v1
+kind: CapabilityManifest
+metadata:
+  name: object-detection-yolo
+  version: "1.2.0"
+  tenant_id: "tenant-corp-01"
+spec:
+  capability: "object_detection"
+  model_ref: "yolov10x"
+  runtime: "onnx_runtime"
+  parameters:
+    confidence_threshold: 0.75
+    nms_threshold: 0.45
+    input_resolution: [640, 640]
+  subscriptions:
+    topics:
+      - "tenant.tenant-corp-01.camera.stream.*"
+  output:
+    subject: "tenant.tenant-corp-01.ai.detection.object"
+    schema_ref: "capability.schema.json"
