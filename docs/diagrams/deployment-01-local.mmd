@@ -25,13 +25,9 @@ subgraph COMPOSE["Docker Compose"]
 subgraph INFRA["Infrastructure"]
 
 NATS["NATS JetStream"]
-
 POSTGRES["PostgreSQL"]
-
 VALKEY["Valkey"]
-
 OPENSEARCH["OpenSearch"]
-
 MINIO["MinIO"]
 
 end
@@ -43,13 +39,9 @@ end
 subgraph OBS["Observability"]
 
 OTEL["OpenTelemetry Collector"]
-
 PROM["Prometheus"]
-
 LOKI["Loki"]
-
 TEMPO["Tempo"]
-
 GRAFANA["Grafana"]
 
 end
@@ -61,27 +53,21 @@ end
 subgraph PLATFORM["OIP Platform"]
 
 API["API Gateway"]
-
 AUTH["Identity Service"]
-
 CORRELATION["Correlation Engine"]
-
 KNOWLEDGE["Knowledge Engine"]
-
 CONTEXT["Context Engine"]
-
 DECISION["Decision Intelligence"]
 
 end
 
 %% ------------------------
-%% Runtime
+%% Runtime (Alterado o ID do Subgraph para evitar conflito)
 %% ------------------------
 
-subgraph RUNTIME["Capability Runtime"]
+subgraph RT_GROUP["Capability Runtime"]
 
 RUNTIME["oip-runtime"]
-
 COLOR["oip-capability-color"]
 
 end
@@ -144,11 +130,7 @@ classDef observability fill:#78350f,color:#fff,stroke:#facc15,stroke-width:2px;
 classDef dev fill:#374151,color:#fff,stroke:#d1d5db,stroke-width:2px;
 
 class VS,BROWSER,CLI dev;
-
 class NATS,POSTGRES,VALKEY,OPENSEARCH,MINIO infra;
-
 class API,AUTH,CORRELATION,KNOWLEDGE,CONTEXT,DECISION platform;
-
 class RUNTIME,COLOR runtime;
-
 class OTEL,PROM,LOKI,TEMPO,GRAFANA observability;
