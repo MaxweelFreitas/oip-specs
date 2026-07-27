@@ -1,0 +1,254 @@
+flowchart TB
+
+%% =====================================================
+%% FIELD
+%% =====================================================
+
+subgraph FIELD["Operational Environment"]
+
+CAM1["IP Cameras"]
+CAM2["PTZ Cameras"]
+DRONE["Drone"]
+BODY["Body Camera"]
+MIC["Microphone"]
+RADAR["Radar"]
+IOT["IoT Sensors"]
+
+end
+
+%% =====================================================
+%% EDGE SITE
+%% =====================================================
+
+subgraph EDGE["Edge Site (Police Station / CIOPS / Vehicle)"]
+
+EDGEGW["Edge Gateway"]
+
+EDGEBUS["Local NATS"]
+
+subgraph EDGERUNTIME["Edge Runtime"]
+
+RT1["Runtime"]
+
+COLOR["Color"]
+
+OCR["OCR"]
+
+TRACK["Tracking"]
+
+AUDIO["Audio"]
+
+end
+
+CACHE["Local Cache"]
+
+STORE["Temporary Storage"]
+
+HEALTH["Offline Queue"]
+
+end
+
+%% =====================================================
+%% CLOUD
+%% =====================================================
+
+subgraph CLOUD["Cloud / Datacenter"]
+
+%% -----------------------------------
+
+subgraph PLATFORM["OIP Platform"]
+
+API["API Gateway"]
+
+IDENTITY["Identity"]
+
+CORRELATION["Correlation"]
+
+KNOWLEDGE["Knowledge"]
+
+CONTEXT["Context Engine"]
+
+MEMORY["Operational Memory"]
+
+DECISION["Decision Intelligence"]
+
+MODELREG["Model Registry"]
+
+CAPSTORE["Capability Store"]
+
+end
+
+%% -----------------------------------
+
+subgraph RUNTIME["Cloud Runtime"]
+
+RTA["Runtime A"]
+
+RTB["Runtime B"]
+
+RTC["Runtime C"]
+
+end
+
+%% -----------------------------------
+
+subgraph STORAGE["Storage"]
+
+POSTGRES["PostgreSQL"]
+
+OPENSEARCH["OpenSearch"]
+
+VALKEY["Valkey"]
+
+VECTOR["Vector DB"]
+
+MINIO["Object Storage"]
+
+FEAST["Feature Store"]
+
+end
+
+%% -----------------------------------
+
+subgraph BUS["Messaging"]
+
+NATS["NATS JetStream Cluster"]
+
+end
+
+%% -----------------------------------
+
+subgraph OBS["Observability"]
+
+OTEL["OpenTelemetry"]
+
+PROM["Prometheus"]
+
+LOKI["Loki"]
+
+TEMPO["Tempo"]
+
+GRAFANA["Grafana"]
+
+end
+
+end
+
+%% =====================================================
+%% USERS
+%% =====================================================
+
+subgraph USERS["Users"]
+
+DASH["Dashboard"]
+
+MOBILE["Mobile"]
+
+DISPATCH["Dispatch Center"]
+
+end
+
+%% =====================================================
+%% FLOWS
+%% =====================================================
+
+CAM1 --> EDGEGW
+CAM2 --> EDGEGW
+DRONE --> EDGEGW
+BODY --> EDGEGW
+MIC --> EDGEGW
+RADAR --> EDGEGW
+IOT --> EDGEGW
+
+EDGEGW --> EDGEBUS
+
+EDGEBUS --> RT1
+
+RT1 --> COLOR
+RT1 --> OCR
+RT1 --> TRACK
+RT1 --> AUDIO
+
+COLOR --> EDGEBUS
+OCR --> EDGEBUS
+TRACK --> EDGEBUS
+AUDIO --> EDGEBUS
+
+EDGEBUS --> CACHE
+EDGEBUS --> STORE
+
+EDGEBUS --> HEALTH
+
+HEALTH --> NATS
+
+EDGEBUS -. Secure Sync .-> NATS
+
+NATS --> RTA
+NATS --> RTB
+NATS --> RTC
+
+NATS --> CORRELATION
+
+CORRELATION --> KNOWLEDGE
+
+KNOWLEDGE --> CONTEXT
+
+CONTEXT --> MEMORY
+
+MEMORY --> DECISION
+
+KNOWLEDGE --> POSTGRES
+KNOWLEDGE --> OPENSEARCH
+KNOWLEDGE --> VALKEY
+KNOWLEDGE --> VECTOR
+KNOWLEDGE --> MINIO
+KNOWLEDGE --> FEAST
+
+KNOWLEDGE --> MODELREG
+KNOWLEDGE --> CAPSTORE
+
+API --> NATS
+
+DASH --> API
+MOBILE --> API
+DISPATCH --> API
+
+API --> OTEL
+CORRELATION --> OTEL
+KNOWLEDGE --> OTEL
+CONTEXT --> OTEL
+DECISION --> OTEL
+RTA --> OTEL
+RTB --> OTEL
+RTC --> OTEL
+
+OTEL --> PROM
+OTEL --> LOKI
+OTEL --> TEMPO
+
+PROM --> GRAFANA
+LOKI --> GRAFANA
+TEMPO --> GRAFANA
+
+%% =====================================================
+%% STYLES
+%% =====================================================
+
+classDef edge fill:#1B4F72,color:#fff,stroke:#5DADE2,stroke-width:2px;
+classDef runtime fill:#512E5F,color:#fff,stroke:#BB8FCE,stroke-width:2px;
+classDef platform fill:#145A32,color:#fff,stroke:#58D68D,stroke-width:2px;
+classDef storage fill:#6E2C00,color:#fff,stroke:#F5B041,stroke-width:2px;
+classDef obs fill:#7D6608,color:#fff,stroke:#F7DC6F,stroke-width:2px;
+classDef users fill:#424949,color:#fff,stroke:#D5D8DC,stroke-width:2px;
+
+class EDGEGW,EDGEBUS,CACHE,STORE,HEALTH edge;
+
+class RT1,COLOR,OCR,TRACK,AUDIO,RTA,RTB,RTC runtime;
+
+class API,IDENTITY,CORRELATION,KNOWLEDGE,CONTEXT,MEMORY,DECISION,MODELREG,CAPSTORE,NATS platform;
+
+class POSTGRES,OPENSEARCH,VALKEY,VECTOR,MINIO,FEAST storage;
+
+class OTEL,PROM,LOKI,TEMPO,GRAFANA obs;
+
+class DASH,MOBILE,DISPATCH users;

@@ -1,0 +1,222 @@
+flowchart TB
+
+%% =====================================================
+%% NATIONAL GOVERNANCE
+%% =====================================================
+
+subgraph NATIONAL["National OIP Federation"]
+
+FEDERATION["Federation Control Plane"]
+
+CATALOG["Global Capability Store"]
+
+MODELREG["National Model Registry"]
+
+KNOWLEDGE["National Knowledge Graph"]
+
+FEATURE["National Feature Store"]
+
+VECTOR["National Vector Search"]
+
+DECISION["National Decision Intelligence"]
+
+FEDERATION --> CATALOG
+FEDERATION --> MODELREG
+FEDERATION --> KNOWLEDGE
+FEDERATION --> FEATURE
+FEDERATION --> VECTOR
+FEDERATION --> DECISION
+
+end
+
+%% =====================================================
+%% STATE A
+%% =====================================================
+
+subgraph STATEA["State A - CIOPS"]
+
+APIA["API Gateway"]
+
+NATSA["NATS Cluster"]
+
+RTA["Capability Runtime"]
+
+KGA["Knowledge Layer"]
+
+OPA["Operational Database"]
+
+end
+
+%% =====================================================
+%% STATE B
+%% =====================================================
+
+subgraph STATEB["State B - CIOPS"]
+
+APIB["API Gateway"]
+
+NATSB["NATS Cluster"]
+
+RTB["Capability Runtime"]
+
+KGB["Knowledge Layer"]
+
+OPB["Operational Database"]
+
+end
+
+%% =====================================================
+%% STATE C
+%% =====================================================
+
+subgraph STATEC["State C - CIOPS"]
+
+APIC["API Gateway"]
+
+NATSC["NATS Cluster"]
+
+RTC["Capability Runtime"]
+
+KGC["Knowledge Layer"]
+
+OPC["Operational Database"]
+
+end
+
+%% =====================================================
+%% EDGE SITES
+%% =====================================================
+
+subgraph EDGE["Edge Sites"]
+
+EDGE1["Police Station"]
+
+EDGE2["Fire Department"]
+
+EDGE3["Mobile Command"]
+
+EDGE4["Patrol Vehicle"]
+
+EDGE5["Airport"]
+
+EDGE6["Port"]
+
+end
+
+%% =====================================================
+%% CAPABILITY ECOSYSTEM
+%% =====================================================
+
+subgraph CAPS["Capability Ecosystem"]
+
+COLOR["Color Intelligence"]
+
+VEHICLE["Vehicle Intelligence"]
+
+PERSON["Person Intelligence"]
+
+FACE["Face Recognition"]
+
+AUDIO["Audio Intelligence"]
+
+FIRE["Fire Detection"]
+
+CUSTOM["Third-party Capabilities"]
+
+end
+
+%% =====================================================
+%% FLOWS
+%% =====================================================
+
+EDGE --> APIA
+EDGE --> APIB
+EDGE --> APIC
+
+APIA --> NATSA
+APIB --> NATSB
+APIC --> NATSC
+
+NATSA --> RTA
+NATSB --> RTB
+NATSC --> RTC
+
+RTA --> COLOR
+RTA --> VEHICLE
+RTA --> PERSON
+
+RTB --> AUDIO
+RTB --> FIRE
+
+RTC --> FACE
+RTC --> CUSTOM
+
+COLOR --> NATSA
+VEHICLE --> NATSA
+PERSON --> NATSA
+
+AUDIO --> NATSB
+FIRE --> NATSB
+
+FACE --> NATSC
+CUSTOM --> NATSC
+
+NATSA --> KGA
+NATSB --> KGB
+NATSC --> KGC
+
+KGA --> OPA
+KGB --> OPB
+KGC --> OPC
+
+%% =====================================================
+%% FEDERATION
+%% =====================================================
+
+KGA -. Knowledge Federation .-> KNOWLEDGE
+KGB -. Knowledge Federation .-> KNOWLEDGE
+KGC -. Knowledge Federation .-> KNOWLEDGE
+
+RTA -. Model Metrics .-> MODELREG
+RTB -. Model Metrics .-> MODELREG
+RTC -. Model Metrics .-> MODELREG
+
+KGA -. Feature Sync .-> FEATURE
+KGB -. Feature Sync .-> FEATURE
+KGC -. Feature Sync .-> FEATURE
+
+KGA -. Embeddings .-> VECTOR
+KGB -. Embeddings .-> VECTOR
+KGC -. Embeddings .-> VECTOR
+
+CATALOG -. Publish Capabilities .-> RTA
+CATALOG -. Publish Capabilities .-> RTB
+CATALOG -. Publish Capabilities .-> RTC
+
+MODELREG -. Deploy Models .-> RTA
+MODELREG -. Deploy Models .-> RTB
+MODELREG -. Deploy Models .-> RTC
+
+KNOWLEDGE --> DECISION
+
+%% =====================================================
+%% STYLES
+%% =====================================================
+
+classDef federation fill:#0B3C5D,color:#fff,stroke:#5DADE2,stroke-width:2px;
+
+classDef state fill:#145A32,color:#fff,stroke:#58D68D,stroke-width:2px;
+
+classDef capability fill:#512E5F,color:#fff,stroke:#BB8FCE,stroke-width:2px;
+
+classDef edge fill:#6E2C00,color:#fff,stroke:#F5B041,stroke-width:2px;
+
+class FEDERATION,CATALOG,MODELREG,KNOWLEDGE,FEATURE,VECTOR,DECISION federation;
+
+class APIA,NATSA,RTA,KGA,OPA state;
+class APIB,NATSB,RTB,KGB,OPB state;
+class APIC,NATSC,RTC,KGC,OPC state;
+
+class COLOR,VEHICLE,PERSON,FACE,AUDIO,FIRE,CUSTOM capability;
+
+class EDGE1,EDGE2,EDGE3,EDGE4,EDGE5,EDGE6 edge;
