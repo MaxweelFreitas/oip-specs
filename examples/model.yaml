@@ -1,0 +1,9 @@
+# Example Model
+
+name: ExampleModel
+version: 1.0.0
+fields:
+  - name: id
+    type: string
+  - name: value
+    type: integer
